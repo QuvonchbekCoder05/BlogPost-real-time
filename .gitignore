@@ -1,0 +1,13 @@
+# Django media va bazalar
+media/
+__pycache__/
+db.sqlite3
+
+# Virtual muhit
+env/
+.env
+
+# Log va cache fayllar
+*.log
+*.pyc
+.cache
