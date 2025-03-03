@@ -1,0 +1,8 @@
+django
+djangorestframework
+channels
+channels-redis
+gunicorn
+psycopg2-binary  # PostgreSQL uchun
+pillow
+channels-client
