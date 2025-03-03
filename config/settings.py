@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-4!(o0zja9jmc32gc(r51^fr=my6-$v=me#l0!6p*!rwm2ios)c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",  # Lokalhost uchun
+    "localhost",
+    os.getenv("RAILWAY_PUBLIC_DOMAIN"),  # Railway avtomatik domen uchun
+    "blogpost-real-time-production.up.railway.app",  # Railway’dagi real domen
+]
 
 
 # Application definition
