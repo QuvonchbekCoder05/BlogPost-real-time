@@ -12,10 +12,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 
-import pymysql
+# import pymysql
 
-pymysql.install_as_MySQLdb()
+# pymysql.install_as_MySQLdb()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -93,27 +94,24 @@ ASGI_APPLICATION = "config.asgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.mysql",
-        "NAME": os.getenv("MYSQLDATABASE", "railway"),
-        "USER": os.getenv("MYSQLUSER", "root"),
-        "PASSWORD": os.getenv("MYSQLPASSWORD", ""),
-        "HOST": os.getenv("MYSQLHOST", "mm.railway.internal"),
-        "PORT": os.getenv("MYSQLPORT", "3306"),
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.mysql",
+#         "NAME": os.getenv("MYSQLDATABASE", "railway"),
+#         "USER": os.getenv("MYSQLUSER", "root"),
+#         "PASSWORD": os.getenv("MYSQLPASSWORD", ""),
+#         "HOST": os.getenv("MYSQLHOST", "mm.railway.internal"),
+#         "PORT": os.getenv("MYSQLPORT", "3306"),
+#     }
+# }
+DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [
-                {
-                    "host": "redis.railway.internal",  # Railway Redis HOST
-                    "port": 6379,  # Railway Redis PORT
-                    "password": "MAWaUjpIaLUyhHSPkBBMwqiiKHZqNMux",  # Agar parol bo‘lsa, qo‘shing
-                }
+                (os.getenv("REDIS_HOST", "127.0.0.1"), os.getenv("REDIS_PORT", 6379))
             ],
         },
     },
