@@ -103,8 +103,16 @@ ASGI_APPLICATION = "config.asgi.application"
 #         "PORT": os.getenv("MYSQLPORT", "3306"),
 #     }
 # }
-DATABASES = {"default": dj_database_url.config(default=os.getenv("DATABASE_URL"))}
-
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "dbname_iiy8",
+        "USER": "postgre",
+        "PASSWORD": "nesuqjThdU6SIGYgNiHSTI9Jj4Sq9WhQ",
+        "HOST": "dpg-cv3agl52ng1s73ft2hpg-a.oregon-postgres.render.com",
+        "PORT": "5432",
+    }
+}
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -156,7 +164,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-
 
 
 # Default primary key field type
