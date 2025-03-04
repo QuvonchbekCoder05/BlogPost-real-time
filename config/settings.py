@@ -91,15 +91,14 @@ ASGI_APPLICATION = "config.asgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("PGDATABASE", "railway"),
-        "USER": os.getenv("PGUSER", "postgres"),
-        "PASSWORD": os.getenv("PGPASSWORD", ""),
-        "HOST": os.getenv("PGHOST", "postgres.railway.internal"),  # Private Networking
-        "PORT": os.getenv("PGPORT", "5432"),
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("MYSQLDATABASE", "railway"),
+        "USER": os.getenv("MYSQLUSER", "root"),
+        "PASSWORD": os.getenv("MYSQLPASSWORD", ""),
+        "HOST": os.getenv("MYSQLHOST", "your-mysql-host"),
+        "PORT": os.getenv("MYSQLPORT", "3306"),
     }
 }
-
 
 CHANNEL_LAYERS = {
     "default": {

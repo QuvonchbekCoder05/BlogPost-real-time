@@ -4,7 +4,6 @@ djangorestframework
 channels
 channels-redis
 gunicorn
-psycopg2-binary  # PostgreSQL uchun
 pillow
 daphne
 whitenoise
