@@ -99,7 +99,7 @@ ASGI_APPLICATION = "config.asgi.application"
 # }
 DATABASES = {
     "default": dj_database_url.config(
-        default="postgres://postgres:qnydvhZgjOwqixpUWnguUADBlaZtKWRL@postgres.railway.internal:5432/railway"
+        default="postgresql://postgres:qnydvhZgjOwqixpUWnguUADBlaZtKWRL@postgres.railway.internal:5432/railway"
     )
 }
 
