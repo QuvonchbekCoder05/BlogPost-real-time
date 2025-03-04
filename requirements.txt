@@ -7,6 +7,6 @@ gunicorn
 pillow
 daphne
 whitenoise
-
+pymysql
 
 
