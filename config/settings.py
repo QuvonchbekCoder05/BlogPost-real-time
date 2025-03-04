@@ -87,17 +87,28 @@ ASGI_APPLICATION = "config.asgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "railway",  # Railway PostgreSQL database nomi
+        "USER": "postgres",  # Railway foydalanuvchi nomi
+        "PASSWORD": "qnydvhZgjOwqixpUWnguUADBlaZtKWRL",  # Railway paroli
+        "HOST": "postgres.railway.internal",  # Railway serveri
+        "PORT": "5432",  # PostgreSQL porti (odatiy: 5432)
     }
 }
+
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("redis://127.0.0.1:6379")],  # LOCALHOSTDA REDIS ISHLASHI UCHUN
+            "hosts": [
+                {
+                    "host": "redis.railway.internal",  # Railway Redis HOST
+                    "port": 6379,  # Railway Redis PORT
+                    "password": "MAWaUjpIaLUyhHSPkBBMwqiiKHZqNMux",  # Agar parol bo‘lsa, qo‘shing
+                }
+            ],
         },
     },
 }
