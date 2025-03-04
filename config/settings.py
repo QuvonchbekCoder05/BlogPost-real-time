@@ -113,13 +113,17 @@ DATABASES = {
         "PORT": "5432",
     }
 }
+
+REDIS_URL = os.getenv(
+    "REDIS_URL",
+    "redis://default:MAWaUjpIaLUyhHSPkBBMwqiiKHZqNMux@tramway.proxy.rlwy.net:34919"
+)
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [
-                (os.getenv("REDIS_HOST", "127.0.0.1"), os.getenv("REDIS_PORT", 6379))
-            ],
+            "hosts": [REDIS_URL],
         },
     },
 }
@@ -170,3 +174,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# https://blogpost-real-time.onrender.com/posts/
