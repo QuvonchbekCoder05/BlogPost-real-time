@@ -7,6 +7,6 @@ gunicorn
 psycopg2-binary  # PostgreSQL uchun
 pillow
 daphne
-dj-database-url
+# dj-database-url
 
 
