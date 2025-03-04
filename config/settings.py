@@ -35,8 +35,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "127.0.0.1",  # Lokalhost uchun
     "localhost",
-    os.getenv("RAILWAY_PUBLIC_DOMAIN"),  # Railway avtomatik domen uchun
-    "blogpost-real-time-production.up.railway.app",  # Railway’dagi real domen
+    os.getenv("RENDER_EXTERNAL_HOSTNAME", "blogpost-real-time.onrender.com"),
 ]
 
 
