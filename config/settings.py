@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+
 import pymysql
 
 pymysql.install_as_MySQLdb()
@@ -98,7 +99,7 @@ DATABASES = {
         "NAME": os.getenv("MYSQLDATABASE", "railway"),
         "USER": os.getenv("MYSQLUSER", "root"),
         "PASSWORD": os.getenv("MYSQLPASSWORD", ""),
-        "HOST": os.getenv("MYSQLHOST", "your-mysql-host"),
+        "HOST": os.getenv("MYSQLHOST", "mysql.railway.internal"),
         "PORT": os.getenv("MYSQLPORT", "3306"),
     }
 }
