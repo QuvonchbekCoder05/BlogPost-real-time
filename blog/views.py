@@ -10,12 +10,12 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import logging
 from .websockets import send_post_update
-from django.conf import settings
+
 
 
 
 # ✅ ImgBB API kaliti
-IMGBB_API_KEY = settings.IMGBB_API_KEY 
+IMGBB_API_KEY = "112af12bdf2b321282827fe1da784f74"
 
 
 def upload_to_imgbb(image_file):
