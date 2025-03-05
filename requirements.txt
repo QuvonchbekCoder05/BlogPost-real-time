@@ -12,5 +12,5 @@ dj-database-url
 uvicorn
 django-environ
 requests
-
+cloudinary
 
