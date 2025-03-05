@@ -6,8 +6,10 @@ db.sqlite3
 # Virtual muhit
 env/
 .env
+nm.py
 
 # Log va cache fayllar
 *.log
 *.pyc
 .cache
+error.log

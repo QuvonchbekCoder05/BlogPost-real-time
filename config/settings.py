@@ -12,7 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
-import dj_database_url
+import environ
+
 
 # import pymysql
 
@@ -23,6 +24,11 @@ import dj_database_url
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# .env faylni yuklash
+env = environ.Env()
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -30,7 +36,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-4!(o0zja9jmc32gc(r51^fr=my6-$v=me#l0!6p*!rwm2ios)c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = [
     "127.0.0.1",  # Lokalhost uchun
@@ -93,31 +99,22 @@ ASGI_APPLICATION = "config.asgi.application"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.mysql",
-#         "NAME": os.getenv("MYSQLDATABASE", "railway"),
-#         "USER": os.getenv("MYSQLUSER", "root"),
-#         "PASSWORD": os.getenv("MYSQLPASSWORD", ""),
-#         "HOST": os.getenv("MYSQLHOST", "mm.railway.internal"),
-#         "PORT": os.getenv("MYSQLPORT", "3306"),
-#     }
-# }
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "dbname_iiy8",
-        "USER": "postgre",
-        "PASSWORD": "nesuqjThdU6SIGYgNiHSTI9Jj4Sq9WhQ",
-        "HOST": "dpg-cv3agl52ng1s73ft2hpg-a.oregon-postgres.render.com",
-        "PORT": "5432",
+        "ENGINE": env("DB_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": env("DB_NAME"),
+        "USER": env("DB_USER"),
+        "PASSWORD": env("DB_PASSWORD"),
+        "HOST": env("DB_HOST"),
+        "PORT": env("DB_PORT", default="5432"),
     }
 }
 
-REDIS_URL = os.getenv(
-    "REDIS_URL",
-    "redis://default:MAWaUjpIaLUyhHSPkBBMwqiiKHZqNMux@tramway.proxy.rlwy.net:34919"
-)
+
+IMGBB_API_KEY = env("IMGBB_API_KEY")
+
+REDIS_URL = env("REDIS_URL")
+
 
 CHANNEL_LAYERS = {
     "default": {
