@@ -13,3 +13,4 @@ nm.py
 *.pyc
 .cache
 error.log
+staticfiles/
