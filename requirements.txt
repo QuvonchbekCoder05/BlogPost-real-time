@@ -9,9 +9,11 @@ daphne
 whitenoise
 psycopg2-binary
 dj-database-url
-uvicorn
+uvicorn[standard]
 django-environ
 requests
 cloudinary
 django-cors-headers
+websockets
+wsproto
 
