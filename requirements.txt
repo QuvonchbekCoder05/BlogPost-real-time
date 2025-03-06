@@ -13,5 +13,5 @@ uvicorn
 django-environ
 requests
 cloudinary
-django-cors-headers 4.7.0
+django-cors-headers
 
