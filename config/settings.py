@@ -42,6 +42,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",  # Lokalhost uchun
     "localhost",
     os.getenv("RENDER_EXTERNAL_HOSTNAME", "blogpost-real-time.onrender.com"),
+    " http://localhost:5173/",
+    "https://blogdelta.netlify.app/",
 ]
 
 
@@ -57,7 +59,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "channels",
     "blog",
-    
+    "corsheaders",  # CORS qo‘shish
 ]
 
 MIDDLEWARE = [
@@ -69,7 +71,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'config.urls'
 
@@ -172,3 +177,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # https://blogpost-real-time.onrender.com/posts/
+# daphne -b 0.0.0.0 -p 8000 config.asgi:application
