@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 import environ
+import sys
+
+if sys.stdout.encoding != "utf-8":
+    sys.stdout = open(sys.stdout.fileno(), mode="w", encoding="utf-8", buffering=1)
 
 
 # import pymysql
@@ -112,6 +116,9 @@ DATABASES = {
         "PASSWORD": env("DB_PASSWORD"),
         "HOST": env("DB_HOST"),
         "PORT": env("DB_PORT", default="5432"),
+        "OPTIONS": {
+            "sslmode": "require",  # ✅ SSL majburiy
+        },
     }
 }
 

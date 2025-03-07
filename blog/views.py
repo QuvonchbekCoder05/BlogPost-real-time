@@ -1,20 +1,13 @@
 import requests
+import json
+from django.db.models import Q
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.db.models import Q
 from .models import Post
 from .serializers import PostSerializer
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
-import logging
-from .websockets import send_post_update
 
-
-
-
-# ✅ ImgBB API kaliti
 IMGBB_API_KEY = "112af12bdf2b321282827fe1da784f74"
 
 
@@ -29,87 +22,151 @@ def upload_to_imgbb(image_file):
         if response.status_code == 200:
             return response.json()["data"]["url"]
         return None
-    except requests.RequestException as e:
-        logger.error(f"ImgBB upload failed: {e}")
+    except requests.RequestException:
         return None
 
 
 class PostListCreateView(APIView):
     """📄 Postlarni olish va yaratish"""
 
-    parser_classes = (MultiPartParser, FormParser)  # ✅ Fayllarni yuklash uchun
+    parser_classes = (MultiPartParser, FormParser)
 
     def get(self, request):
-        """🔍 Postlarni qidirish va olish"""
         search = request.GET.get("search", "")
-        posts = (
-            Post.objects.filter(
+        posts = Post.objects.all()
+
+        if search:
+            posts = posts.filter(
                 Q(title__icontains=search)
-                | Q(description__icontains=search)
-                | Q(content__icontains=search)
-            )
-            if search
-            else Post.objects.all()
-        )
+                | Q(section_elements__value__icontains=search)
+            ).distinct()
 
         return Response(
             PostSerializer(posts, many=True).data, status=status.HTTP_200_OK
         )
 
     def post(self, request):
-        """📝 Yangi post yaratish"""
+        # Rasm yuklash
         image_url = (
-            upload_to_imgbb(request.FILES["image"])
+            upload_to_imgbb(request.FILES.get("image"))
             if "image" in request.FILES
             else None
         )
         background_url = (
-            upload_to_imgbb(request.FILES["background_image"])
+            upload_to_imgbb(request.FILES.get("background_image"))
             if "background_image" in request.FILES
             else None
         )
 
-        data = request.data.copy()
-        data["image"] = image_url if image_url else None
-        data["background_image"] = background_url if background_url else None
+        # ✅ SECTIONS FORMATINI TO‘G‘RILASH
+        sections_data = []
+        i = 0
+        while f"sections[{i}][description]" in request.data:
+            sections_data.append(
+                {
+                    "description": request.data.get(f"sections[{i}][description]", ""),
+                    "content": request.data.get(f"sections[{i}][content]", ""),
+                    "section_image": (
+                        upload_to_imgbb(
+                            request.FILES.get(f"sections[{i}][section_image]")
+                        )
+                        if f"sections[{i}][section_image]" in request.FILES
+                        else None
+                    ),
+                }
+            )
+            i += 1
+
+        # Serializer uchun ma’lumot tayyorlash
+        data = {
+            "title": request.data.get("title"),
+            "image": image_url,
+            "background_image": background_url,
+            "sections": sections_data,
+        }
 
         serializer = PostSerializer(data=data)
         if serializer.is_valid():
             post = serializer.save()
-            send_post_update("created", post)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PostDetailView(APIView):
-    """📄 Bitta postni ko‘rish, o‘zgartirish va o‘chirish"""
+    """📄 Bitta postni ko‘rish, yangilash va o‘chirish"""
 
     def get(self, request, post_id):
-        """🔍 Postni olish"""
         post = Post.objects.filter(id=post_id).first()
         if post:
             return Response(PostSerializer(post).data, status=status.HTTP_200_OK)
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, post_id):
-        """✏️ Postni yangilash"""
         post = Post.objects.filter(id=post_id).first()
-        if post:
-            serializer = PostSerializer(post, data=request.data, partial=True)
-            if serializer.is_valid():
-                post = serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        if not post:
+            return Response(
+                {"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        # 🔥 Rasm fayllarini yuklash
+        image_url = (
+            upload_to_imgbb(request.FILES.get("image"))
+            if "image" in request.FILES
+            else post.image
+        )
+        background_url = (
+            upload_to_imgbb(request.FILES.get("background_image"))
+            if "background_image" in request.FILES
+            else post.background_image
+        )
+
+        # ✅ SECTIONS FORMATINI TO‘G‘RILASH
+        sections_data = []
+        i = 0
+        while f"sections[{i}][description]" in request.data:
+            sections_data.append(
+                {
+                    "description": request.data.get(f"sections[{i}][description]", ""),
+                    "content": request.data.get(f"sections[{i}][content]", ""),
+                    "section_image": (
+                        upload_to_imgbb(
+                            request.FILES.get(f"sections[{i}][section_image]")
+                        )
+                        if f"sections[{i}][section_image]" in request.FILES
+                        else None
+                    ),
+                }
+            )
+            i += 1
+
+        # ✅ Yangi ma’lumotlarni serializerga uzatamiz
+        data = {
+            "title": request.data.get("title", post.title),
+            "image": image_url,
+            "background_image": background_url,
+            "sections": (
+                sections_data if sections_data else None
+            ),  # 🔥 Agar bo‘sh bo‘lsa, eski sections o‘zgarishsiz qoladi
+        }
+
+        serializer = PostSerializer(post, data=data, partial=True)
+        if serializer.is_valid():
+            post = serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, post_id):
-        """🗑 Postni o‘chirish"""
         post = Post.objects.filter(id=post_id).first()
         if post:
             post.delete()
-            # send_post_update("deleted", post)
             return Response(
                 {"message": "Post deleted"}, status=status.HTTP_204_NO_CONTENT
             )
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class PingView(APIView):
+    def get(self, request):
+        return Response({"message": "Server is running!"}, status=status.HTTP_200_OK)
