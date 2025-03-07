@@ -1,3 +1,5 @@
+import os
+import environ
 import requests
 import json
 from django.db.models import Q
@@ -7,6 +9,29 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Post
 from .serializers import PostSerializer
+
+# `.env` faylni o‘qish
+env = environ.Env()
+environ.Env.read_env(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
+
+# 🔥 `.env` dan `PASSWORD` ni yuklash
+PASSWORD = env("PASSWORD")
+
+
+def check_password(request):
+    """🔒 Header orqali kelayotgan `PASSWORD` ni tekshirish"""
+    client_password = request.headers.get(
+        "PASSWORD"
+    )  # 🔥 Foydalanuvchidan kelgan parol
+    system_password = PASSWORD  # 🔥 `.env` dan yuklangan parol
+
+    if not client_password or client_password != system_password:
+        return (
+            False  # ❌ Agar `PASSWORD` kelmasa yoki noto‘g‘ri bo‘lsa, ruxsat berilmaydi
+        )
+
+    return True  # ✅ Parol to‘g‘ri bo‘lsa, ruxsat beriladi
+
 
 IMGBB_API_KEY = "112af12bdf2b321282827fe1da784f74"
 
@@ -38,7 +63,8 @@ class PostListCreateView(APIView):
         if search:
             posts = posts.filter(
                 Q(title__icontains=search)
-                | Q(section_elements__value__icontains=search)
+                | Q(sections__description__icontains=search)
+                | Q(sections__content__icontains=search)
             ).distinct()
 
         return Response(
@@ -46,6 +72,10 @@ class PostListCreateView(APIView):
         )
 
     def post(self, request):
+        """🔒 `POST` faqat `PASSWORD` to‘g‘ri bo‘lsa ishlaydi"""
+        if not check_password(request):
+            return Response({"error": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN)
+
         # Rasm yuklash
         image_url = (
             upload_to_imgbb(request.FILES.get("image"))
@@ -103,6 +133,10 @@ class PostDetailView(APIView):
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, post_id):
+        """🔒 `PUT` faqat `PASSWORD` to‘g‘ri bo‘lsa ishlaydi"""
+        if not check_password(request):
+            return Response({"error": "Unauthorized"}, status=status.HTTP_403_FORBIDDEN)
+
         post = Post.objects.filter(id=post_id).first()
         if not post:
             return Response(
@@ -145,9 +179,7 @@ class PostDetailView(APIView):
             "title": request.data.get("title", post.title),
             "image": image_url,
             "background_image": background_url,
-            "sections": (
-                sections_data if sections_data else None
-            ),  # 🔥 Agar bo‘sh bo‘lsa, eski sections o‘zgarishsiz qoladi
+            "sections": sections_data if sections_data else None,
         }
 
         serializer = PostSerializer(post, data=data, partial=True)

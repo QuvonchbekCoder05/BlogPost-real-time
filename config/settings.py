@@ -51,6 +51,8 @@ ALLOWED_HOSTS = [
 ]
 
 
+PASSWORD = env("PASSWORD")
+
 # Application definition
 
 INSTALLED_APPS = [
