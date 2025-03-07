@@ -48,6 +48,7 @@ ALLOWED_HOSTS = [
     os.getenv("RENDER_EXTERNAL_HOSTNAME", "blogpost-real-time.onrender.com"),
     " http://localhost:5173/",
     "https://blogdelta.netlify.app/",
+    "http://127.0.0.1:5500/",
 ]
 
 
@@ -78,9 +79,16 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [  # ✅ Faqat ruxsat berilgan frontend domenlarini qo‘shamiz
+    "http://127.0.0.1:5500",
+    "https://blogpost-real-time.onrender.com",
+    "https://blogdelta.netlify.app/",
+]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ["PASSWORD", "Content-Type"]
 
 ROOT_URLCONF = 'config.urls'
 
