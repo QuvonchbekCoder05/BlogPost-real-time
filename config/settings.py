@@ -85,7 +85,7 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [  # ✅ Faqat ruxsat berilgan frontend domenlarini qo‘shamiz
     "http://127.0.0.1:5500",
     "https://blogpost-real-time.onrender.com",
-    "https://blogdelta.netlify.app",
+    "https://blogpostdelta.netlify.app",
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ["PASSWORD", "Content-Type"]
